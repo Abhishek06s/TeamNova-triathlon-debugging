@@ -22,7 +22,7 @@ async function userLogin() {
 
 /* REGISTER */
 async function register() {
-  await fetch(API + "/api/user/register", {
+    const res = await fetch(API + "/api/user/register", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
@@ -31,12 +31,14 @@ async function register() {
     })
   });
 
-  window.location.href = "login.html";
+  const data = await res.json();
+  if(data.success === true) window.location.href = "login.html";
 }
 
 /* PRODUCTS */
 async function loadProducts() {
-  const res = await fetch(API + "/api/product"); // BUG
+  const res = await fetch(`${API}/api/products`); // ~BUG
+  if (!res.ok) throw new Error("Fetch failed");
   const data = await res.json();
 
   const list = document.getElementById("list");
@@ -57,7 +59,7 @@ async function loadProducts() {
 function addToCart(id, name, price) {
   let cart = JSON.parse(localStorage.getItem("cartItems")) || [];
   cart.push({ id, name, price });
-  localStorage.setItem("cart", JSON.stringify(cart)); // BUG
+  localStorage.setItem("cartItems", JSON.stringify(cart)); // ~BUG
 }
 
 /* ORDER */
@@ -80,7 +82,7 @@ async function placeOrder() {
 
 /* ADMIN */
 function checkAdmin() {
-  if (!localStorage.getItem("admin")) return;
+  if (!localStorage.getItem("admin")) return window.location.href = "login.html";
 }
 
 async function adminLogin() {
@@ -100,3 +102,5 @@ async function adminLogin() {
     window.location.href = "dashboard.html";
   }
 }
+
+
